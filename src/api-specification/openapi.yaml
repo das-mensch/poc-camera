@@ -1,0 +1,56 @@
+openapi: 3.0.0
+info:
+  title: Pose Detection API
+  version: 1.0.0
+  description: API for detecting human poses and returning COCO keypoints from a base64-encoded image.
+
+paths:
+  /pose:
+    post:
+      summary: Detect Pose
+      description: Accepts a base64 image string and returns COCO keypoints with x, y, and z properties.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: base64
+                  description: Base64-encoded image string.
+              required:
+                - image
+      responses:
+        '200':
+          description: COCO keypoints detected in the image.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  keypoints:
+                    type: array
+                    description: Array of COCO keypoints.
+                    items:
+                      type: object
+                      description: Keypoint with x, y, and z coordinates.
+                      properties:
+                        x:
+                          type: number
+                          description: X-coordinate of the keypoint.
+                        y:
+                          type: number
+                          description: Y-coordinate of the keypoint.
+                        z:
+                          type: number
+                          description: Z-coordinate or confidence score of the keypoint.
+                      required:
+                        - x
+                        - y
+                        - z
+        '400':
+          description: Invalid request - image data missing or improperly formatted.
+        '500':
+          description: Internal server error.
