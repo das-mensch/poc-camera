@@ -1,0 +1,15 @@
+.fab-wrapper {
+    position: relative;
+    top: -100px;
+    display: flex;
+    justify-content: center;
+}
+
+.fab-inner {
+    display: flex;
+    gap: 16px;
+    padding: 16px;
+    background-color: rgba(255, 255, 255, 1);
+    border-top-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
