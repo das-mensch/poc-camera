@@ -6,10 +6,12 @@ import RecordIcon from '@mui/icons-material/FiberManualRecord';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 
 type VideoDisplayProps = {
+  apiUrl: string;
+  checkInterval: number;
   videoPath?: string; // Optional path to a local video file
 };
 
-const VideoDisplay: React.FC<VideoDisplayProps> = ({ videoPath }) => {
+const VideoDisplay: React.FC<VideoDisplayProps> = ({ apiUrl, checkInterval, videoPath }) => {
   const mountRef = useRef<HTMLDivElement>(null);
   const videoRef = useRef<HTMLVideoElement | null>(null);
   const cameraStream = useRef<MediaStream | null>(null);
@@ -20,10 +22,11 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({ videoPath }) => {
 
   useEffect(() => {
     const initThreeJS = async () => {
+      if (!mountRef.current) return;
       // Create a video element (shared for both video file and camera feed)
       const videoElement = document.createElement("video");
       videoElement.autoplay = false;
-      videoElement.muted = true; 
+      videoElement.muted = true;
       videoElement.loop = true;
       videoRef.current = videoElement;
 
@@ -65,7 +68,7 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({ videoPath }) => {
           videoElement.src = videoPath;
           videoElement.play();
           return;
-        } 
+        }
         // Use live webcam feed
         try {
           const stream = await navigator.mediaDevices.getUserMedia({
@@ -88,8 +91,8 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({ videoPath }) => {
         renderer.render(scene, camera);
       };
       animate();
-
       window.addEventListener('resize', () => {
+        if (!mountRef.current) return;
         renderer.setSize(
           mountRef.current!.clientWidth,
           mountRef.current!.clientHeight
@@ -116,7 +119,7 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({ videoPath }) => {
   }, [videoPath]);
 
   useEffect(() => {
-    const captureInterval = setTimeout(() => {
+    const captureInterval = setInterval(() => {
       const video = videoRef.current;
       const canvas = canvasRef.current;
 
@@ -130,13 +133,21 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({ videoPath }) => {
 
           // Get Base64 representation of the frame
           const base64Image = canvas.toDataURL("image/png");
-          console.log(base64Image);
+          fetch(`${apiUrl}/pose`, {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+              'Access-Control-Allow-Origin': '*',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ image: base64Image })
+          }).catch(console.error)
         }
       }
-    }, 3000); // Every second
+    }, checkInterval);
 
     return () => clearInterval(captureInterval);
-  }, []);
+  }, [apiUrl, checkInterval]);
 
   return (
     <Box sx={{ position: 'absolute', width: '100%', height: '100%' }}>
