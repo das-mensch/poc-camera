@@ -21,7 +21,7 @@ const Settings: React.FC<SettingsProps> = ({ protocol: initialProtocol, path: in
   const [checkInterval, setCheckInterval] = useState(initialCheckInterval);
 
   return (
-    <Box sx={{ padding: '16px', marginLeft: '120px'}}>
+    <Box sx={{ padding: '16px' }}>
       <Card>
         <CardHeader title='Backend-Settings' />
         <CardContent sx={{ display: 'flex', gap: '16px', flexDirection: 'column' }}>

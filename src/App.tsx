@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import VideoDisplay from './components/VideoDisplay';
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText } from '@mui/material';
 import VideocamIcon from '@mui/icons-material/Videocam';
 import UploadIcon from '@mui/icons-material/Upload';
 import SettingsIcon from '@mui/icons-material/Settings';
 import Settings, { EProtocol } from './components/Settings';
+import SideNav, { MenuItem } from './ui/sidenav/SideNav';
 
 function getFromLS<T>(key: string): T | null {
   if (!window.localStorage) return null;
@@ -21,6 +21,23 @@ function App() {
   const [port, setPort] = useState<string>(getFromLS('apiPort') || '80');
   const [checkInterval, setCheckInterval] = useState<number>(Number(getFromLS('checkInterval')) || 1000);
   const [apiUrl, setApiUrl] = useState<string>('');
+  const menuItems: MenuItem[] = [
+    {
+      icon: React.createElement(VideocamIcon, {}),
+      key: 'live',
+      title: 'Live'
+    },
+    {
+      icon: React.createElement(UploadIcon, {}),
+      key: 'upload',
+      title: 'Upload'
+    },
+    {
+      icon: React.createElement(SettingsIcon, {}),
+      key: 'settings',
+      title: 'Settings'
+    }
+  ]
 
   useEffect(() => {
     window.localStorage.setItem('apiProtocol', protocol);
@@ -34,46 +51,8 @@ function App() {
   }, [protocol, path, port]);
 
   return (
-    <Box sx={{ height: '100%', display: 'flex', flex: 1 }}>
-      <Box component="nav">
-        <Drawer open={true} variant="permanent" sx={{ display: 'block' }}>
-          <List>
-            <ListItem sx={{
-                  '& .MuiListItemButton-root': { flexDirection: 'column' },
-                  '& .MuiListItemIcon-root': { justifyContent: 'center' }
-                }}>
-              <ListItemButton selected={selectedItem === 'live'} onClick={() => setSelectedItem('live') }>
-                <ListItemIcon>
-                  <VideocamIcon />
-                </ListItemIcon>
-                <ListItemText primary="Live" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem sx={{
-                  '& .MuiListItemButton-root': { flexDirection: 'column' },
-                  '& .MuiListItemIcon-root': { justifyContent: 'center' }
-                }}>
-              <ListItemButton selected={selectedItem === 'upload'} onClick={() => setSelectedItem('upload') }>
-                <ListItemIcon>
-                  <UploadIcon />
-                </ListItemIcon>
-                <ListItemText primary="Upload" />
-              </ListItemButton>
-            </ListItem>
-            <ListItem sx={{
-                  '& .MuiListItemButton-root': { flexDirection: 'column' },
-                  '& .MuiListItemIcon-root': { justifyContent: 'center' }
-                }}>
-              <ListItemButton selected={selectedItem === 'settings'} onClick={() => setSelectedItem('settings') }>
-                <ListItemIcon>
-                  <SettingsIcon />
-                </ListItemIcon>
-                <ListItemText primary="Settings" />
-              </ListItemButton>
-            </ListItem>
-          </List>
-        </Drawer>
-      </Box>
+    <div className="app-main-container">
+      <SideNav items={menuItems} onChange={(key) => setSelectedItem(key)} />
       {selectedItem === 'live' && (
         <VideoDisplay
           apiUrl={apiUrl}
@@ -94,7 +73,7 @@ function App() {
           }}
         />
       )}
-    </Box>
+    </div>
   );
 }
 

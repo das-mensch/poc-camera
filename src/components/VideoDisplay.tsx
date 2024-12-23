@@ -1,4 +1,4 @@
-import { Box, Fab } from '@mui/material';
+import { Fab } from '@mui/material';
 import React, { useEffect, useRef } from 'react';
 import * as THREE from 'three';
 import './VideoDisplay.css';
@@ -150,9 +150,8 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({ apiUrl, checkInterval, vide
   }, [apiUrl, checkInterval]);
 
   return (
-    <Box sx={{ position: 'absolute', width: '100%', height: '100%' }}>
+    <div style={{ display: 'flex', flexGrow: 1, position: 'relative' }} ref={mountRef}>
       <canvas ref={canvasRef} style={{ display: "none" }} />
-      <Box ref={mountRef} sx={{ width: '100%', height: '100%' }} />
       <div className="fab-wrapper">
         <div className="fab-inner">
           <Fab color="secondary">
@@ -166,7 +165,7 @@ const VideoDisplay: React.FC<VideoDisplayProps> = ({ apiUrl, checkInterval, vide
           </Fab>
         </div>
       </div>
-    </Box>
+    </div>
   );
 };
 
